@@ -1,5 +1,11 @@
+function saveGame() {
+  filled_rects = rects.filter(element => element.filled != 0);
+  window.localStorage.setItem(game_num, filled_rects);
+  console.log(game_num);
+}
+
 //inicializace hry
-function init() {
+function init(button) {
   //inicializace canvasu
   window.canvas = document.getElementById('Tic_tac_toe_canvas');
   window.ctx = canvas.getContext('2d');
@@ -12,18 +18,23 @@ function init() {
   window.num_of_rects_vertical = canvas_height / rect_side;
   window.start_x = 0;
   window.start_y = 0;
+  window.rect_id = 0;
 
   window.turn = 1;
   window.win_number = 4;
   window.won = false;
+  window.save_slot = button.id;
+  window.game_num = 'ttt_game_' + save_slot;
 
   window.rects = [];
+  window.filled_rects = [];
 
   //vykresleni mrizky
   for (var i = 0; i < num_of_rects_vertical; i++) {
     for (var j = 0; j < num_of_rects_horizontal; j++) {
       ctx.strokeRect(start_x, start_y, rect_side, rect_side);
       rects.push({
+        id: rect_id,
         pos_x: start_x,
         pos_y: start_y,
         width: rect_side,
@@ -31,10 +42,26 @@ function init() {
         filled: 0
       });
       start_x += rect_side;
+      rect_id++;
     }
     start_x = 0;
     start_y += rect_side;
   }
+
+  if (window.localStorage.getItem(game_num) != null) {
+    filled_rects = window.localStorage.getItem(game_num);
+    for (var i = 0; i < filled_rects.length; i++) {
+      if (filled_rects[i].filled == 1) {
+        drawCross(filled_rects[i].pos_x, filled_rects[i].pos_y);
+        rects[filled_rects[i].id].filled = 1;
+      } else if (filled_rects[i] == 2) {
+        drawCircle(filled_rects[i].pos_x, filled_rects[i].pos_y);
+        rects[filled_rects[i].id].filled = 2;
+      }
+    }
+  }
+
+  console.log(filled_rects);
 }
 
 //pridani tvaru
@@ -63,10 +90,10 @@ function addShape() {
   //vykresleni tvaru
   if (rect.filled == 0) {
     if (turn % 2 == 0) {
-      drawCircle();
+      drawCircle(rect_x, rect_y);
       rect.filled = 2;
     } else {
-      drawCross();
+      drawCross(rect_x, rect_y);
       rect.filled = 1;
     }
     turn++;
@@ -75,19 +102,19 @@ function addShape() {
 }
 
 //krizek
-function drawCross() {
-  ctx.moveTo(rect.pos_x + 5, rect.pos_y + 5);
-  ctx.lineTo(rect.pos_x + rect_side - 5, rect.pos_y + rect_side - 5);
+function drawCross(x, y) {
+  ctx.moveTo(x + 5, y + 5);
+  ctx.lineTo(x + rect_side - 5, y + rect_side - 5);
   ctx.stroke();
-  ctx.moveTo(rect.pos_x + rect_side - 5, rect.pos_y + 5);
-  ctx.lineTo(rect.pos_x + 5, rect.pos_y + rect_side - 5);
+  ctx.moveTo(x + rect_side - 5, y + 5);
+  ctx.lineTo(x + 5, y + rect_side - 5);
   ctx.stroke();
 }
 
 //kolecko
-function drawCircle() {
+function drawCircle(x, y) {
   ctx.beginPath();
-  ctx.arc(rect.pos_x + (rect_side / 2), rect.pos_y + (rect_side / 2), rect_side / 2 - 5, 0, 2 * Math.PI)
+  ctx.arc(x + (rect_side / 2), y + (rect_side / 2), rect_side / 2 - 5, 0, 2 * Math.PI)
   ctx.stroke();
 }
 

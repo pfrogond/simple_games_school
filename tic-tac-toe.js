@@ -9,7 +9,6 @@ const rect_side = 50;
 
 //inicializace hry, popr. nacteni ulozene pozice
 function init(button) {
-
   //smazani a znovu vytvoreni canvasu
   if (document.getElementById('Tic_tac_toe_canvas') != null) {
     document.getElementById('Tic_tac_toe_canvas').remove();

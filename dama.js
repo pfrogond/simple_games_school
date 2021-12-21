@@ -3,9 +3,7 @@ let dama_prefix = 'dama_game_';
 let turn = 1;
 let won = false;
 let current_game = null;
-let player_1_set = [1,3,5,7,8,10,12,14,17,19,21,23];
-let player_2_set = [40,42,44,46,49,51,53,55,56,58,60,62];
-let stones = [1,3,5,7,17,19,21,23,8,10,12,14,40,42,44,46,56,58,60,62,49,51,53,55]
+let stones = [1,3,5,7,17,19,21,23,8,10,12,14,40,42,44,46,56,58,60,62,49,51,53,55];
 
 const rect_side = 80;
 const playground_size = 8;
@@ -82,7 +80,7 @@ function initDeployment() {
       x += 160;
       aux_var++;
     }
-    x = 0;
+    x = 80;
     y += 160;
   }
 
@@ -98,7 +96,7 @@ function initDeployment() {
   }
 
   //modra
-  x = 80;
+  x = 0;
   y = 400;
 
   for(let i = 0; i < 2; i++){
@@ -113,8 +111,8 @@ function initDeployment() {
     y += 160;
   }
 
-  x = 0;
-  y = 80;
+  x = 80;
+  y = 480;
 
   for(let k = 0; k < 4; k++){
     init_deployment.push(
@@ -128,6 +126,9 @@ function initDeployment() {
 }
 
 function createRectVirtual(id, x, y, filled) {
+
+  console.log(x, y);
+
   return {
     rect_id: id,
     pos_x: x,
@@ -148,7 +149,7 @@ function createRect(id, x, y, filled) {
   } else {
     ctx.fillStyle = '#FFFFFF';
   }
-  console.log(id, y);
+  // console.log(id, y);
   ctx.fillRect(x, y, rect_side, rect_side);
 
   if (filled != 0) {
@@ -174,4 +175,46 @@ function drawStone(x, y, filled) {
     ctx.fillStyle = '#0000FF';
   }
   ctx.fill();
+}
+
+function moveStone() {
+  if (!won) {
+    let canvas_offset_left = canvas.offsetLeft + 5;
+    let canvas_offset_top = canvas.offsetTop + 5;
+    let click_x = event.clientX / canvas_offset_left;
+    let click_y = event.clientY / canvas_offset_top;
+
+    window.rect_x = null;
+    window.rect_y = null;
+
+    rect_x = Math.floor(click_x / rect_side);
+    rect_x *= rect_side;
+
+    rect_y = Math.floor(click_y / rect_side);
+    rect_y *= rect_side;
+
+    window.rect = rects.find(element =>
+      element.pos_x == rect_x &&
+      element.pos_y == rect_y
+    );
+
+    if (rect.filled == 1) {
+      checkMovementDown();
+    } else if (rect.filled == 2) {
+      checkMovementUp();
+    }
+  }
+}
+
+function checkMovementDown() {
+  let possible_moves = [];
+  let checked_rects = [];
+
+  checked_rects = rects.filter(element =>
+    element.pos
+  );
+}
+
+function checkMovementUp() {
+
 }

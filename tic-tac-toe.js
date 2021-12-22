@@ -121,8 +121,8 @@ function addShape() {
       }
       turn++;
       winCondition(rect.rect_id);
+      saveGame();
     }
-    saveGame();
     if (won) {
       console.log(won);
     }

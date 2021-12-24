@@ -4,10 +4,9 @@ const white = '#FFFFFF';
 const red = '#FF0000';
 const blue = '#0000FF';
 const green = '#00FF00';
-const rect_side = 80;
+const rect_side = 40;
 
 let selected_stone = undefined;
-let selected_moves = [];
 
 //inicializace hry
 function init(button) {
@@ -17,8 +16,8 @@ function init(button) {
 
   window.canvas = document.createElement('canvas');
   canvas.id = 'Tic_tac_toe_canvas';
-  canvas.width = 640;
-  canvas.height = 640;
+  canvas.width = 320;
+  canvas.height = 320;
   canvas.addEventListener('click', click);
 
   let body = document.getElementById('main_body');
@@ -28,7 +27,12 @@ function init(button) {
 
   window.side_red = [];
   window.side_blue = [];
+  window.side_friendly = side_red;
+  window.side_foe = side_blue;
+  window.color_friendly = red;
+  window.color_foe = blue;
   window.turn = 1;
+  window.current_direction = rect_side;
 
   console.clear();
 
@@ -46,9 +50,7 @@ function init(button) {
   }
 
   initDeployment(0, red, side_red);
-  initDeployment(400, blue, side_blue);
-
-  side_blue.push(createStone(160, 240, blue, 1));
+  initDeployment(5 * rect_side, blue, side_blue);
 }
 
 //vykresleni ctverce
@@ -72,16 +74,16 @@ function initDeployment(y, color, side) {
       switch (color) {
         case red:
           if (i % 2 == 0) {
-            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color, 1));
+            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color));
           } else {
-            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color, 1));
+            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color));
           }
           break;
         default:
           if (i % 2 == 0) {
-            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color, 1));
+            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color));
           } else {
-            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color, 1));
+            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color));
           }
       }
     }
@@ -89,14 +91,15 @@ function initDeployment(y, color, side) {
 }
 
 //vytvoreni herniho kamene a jeho vykresleni
-function createStone(x, y, color, status) {
+function createStone(x, y, color) {
   drawCircle(x, y, color);
 
   return {
     stone_x: x,
     stone_y: y,
     stone_color: color,
-    stone_status: status
+    stone_status: 1,
+    stone_moves: []
   };
 }
 
@@ -116,30 +119,28 @@ function click() {
   selected_y = Math.floor(click_y / rect_side);
   selected_y *= rect_side;
 
-  if (turn % 2 == 1) {
-    selected_stone = findStone(side_red);
-  } else {
-    selected_stone = findStone(side_blue);
-  }
-
   if (selected_stone != undefined) {
     hideMoves();
-    if (turn % 2 == 1) {
-      showMoves(1 * rect_side, side_red, side_blue);
-    } else {
-      showMoves(-1 * rect_side, side_blue, side_red);
-    }
+  }
+
+  findStone(side_friendly);
+
+  if (selected_stone != undefined) {
+    showMoves(current_direction, side_friendly, side_foe);
+    moveStone();
   }
 }
 
 //vyhledani kamene dle kliknuti
 function findStone(side) {
-  return (
-    side.find(element =>
-      element.stone_x == selected_x &&
-      element.stone_y == selected_y
-    )
+  let new_stone = side.find(element =>
+    element.stone_x == selected_x &&
+    element.stone_y == selected_y
   );
+
+  if (new_stone != undefined) {
+    selected_stone = new_stone;
+  }
 }
 
 //zobrazeni potencialnich tahu
@@ -153,10 +154,10 @@ function showMoves(direction, friendly, foe) {
 
     if (obstruction_friendly == undefined && obstruction_foe == undefined) {
       drawRect(selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction, green);
-      selected_moves.push([selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction]);
+      selected_stone.stone_moves.push([selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction]);
     } else if (obstruction_foe != undefined) {
       drawRect(selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction, green);
-      selected_moves.push([selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction])
+      selected_stone.stone_moves.push([selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction])
     }
   }
 }
@@ -173,8 +174,45 @@ function getObstruction(variable, direction, side) {
 
 //skryti potencialnich tahu
 function hideMoves() {
-  for(let i = 0; i < selected_moves.length; i++){
-    drawRect(selected_moves[i][0], selected_moves[i][1], black);
+  for(let i = 0; i < selected_stone.stone_moves.length; i++){
+    drawRect(selected_stone.stone_moves[i][0], selected_stone.stone_moves[i][1], black);
   }
-  selected_moves = [];
+}
+
+//posunuti hraciho kamene
+function moveStone() {
+  let possible_move = selected_stone.stone_moves.find(element =>
+    element[0] == selected_x &&
+    element[1] == selected_y
+  );
+  if (possible_move != undefined) {
+    hideMoves();
+    drawRect(selected_stone.stone_x, selected_stone.stone_y, black);
+    drawCircle(possible_move[0], possible_move[1], color_friendly);
+    selected_stone.stone_x = possible_move[0];
+    selected_stone.stone_y = possible_move[1];
+    selected_stone.stone_moves = [];
+    console.clear();
+    console.log(side_friendly);
+    endTurn();
+  }
+}
+
+//konec tahu
+function endTurn() {
+  turn++;
+  current_direction *= -1;
+  selected_stone = undefined;
+
+  if (turn % 2 == 1) {
+    side_friendly = side_red;
+    side_foe = side_blue;
+    color_friendly = red;
+    color_foe = blue;
+  } else {
+    side_friendly = side_blue;
+    side_foe = side_red;
+    color_friendly = blue;
+    color_foe = red;
+  }
 }

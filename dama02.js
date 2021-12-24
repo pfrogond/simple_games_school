@@ -2,7 +2,9 @@
 const black = '#000000';
 const white = '#FFFFFF';
 const red = '#FF0000';
+const pink = '#FF0F99';
 const blue = '#0000FF';
+const azure = '#00FFFF';
 const green = '#00FF00';
 const rect_side = 40;
 
@@ -126,7 +128,7 @@ function click() {
   findStone(side_friendly);
 
   if (selected_stone != undefined) {
-    showMoves(current_direction, side_friendly, side_foe);
+    getMoves(current_direction, side_friendly, side_foe);
     moveStone();
   }
 }
@@ -144,7 +146,7 @@ function findStone(side) {
 }
 
 //zobrazeni potencialnich tahu
-function showMoves(direction, friendly, foe) {
+function getMoves(direction, friendly, foe) {
   let obstruction_friendly = undefined;
   let obstruction_foe = undefined;
 
@@ -152,12 +154,24 @@ function showMoves(direction, friendly, foe) {
     obstruction_friendly = getObstruction(i, direction, friendly);
     obstruction_foe = getObstruction(i, direction, foe);
 
-    if (obstruction_friendly == undefined && obstruction_foe == undefined) {
+    if (
+      obstruction_friendly == undefined &&
+      obstruction_foe == undefined
+    ) {
       drawRect(selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction, green);
-      selected_stone.stone_moves.push([selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction]);
-    } else if (obstruction_foe != undefined) {
+      selected_stone.stone_moves.push([
+        selected_stone.stone_x + (i * rect_side),
+        selected_stone.stone_y + direction]);
+    } else if (
+      obstruction_foe != undefined &&
+      getObstruction(i * 2, direction * 2, friendly) == undefined &&
+      getObstruction(i * 2, direction * 2, foe) == undefined
+    ) {
       drawRect(selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction, green);
-      selected_stone.stone_moves.push([selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction])
+      selected_stone.stone_moves.push([
+        selected_stone.stone_x + (2 * i * rect_side),
+        selected_stone.stone_y + 2 * direction
+      ]);
     }
   }
 }
@@ -188,12 +202,18 @@ function moveStone() {
   if (possible_move != undefined) {
     hideMoves();
     drawRect(selected_stone.stone_x, selected_stone.stone_y, black);
-    drawCircle(possible_move[0], possible_move[1], color_friendly);
+    drawCircle(possible_move[0], possible_move[1], selected_stone.stone_color);
+    if (Math.abs(possible_move[0] - selected_stone.stone_x) > rect_side) {
+      removeStone(
+        selected_stone.stone_x + (possible_move[0] - selected_stone.stone_x) / 2,
+        selected_stone.stone_y + current_direction
+      );
+    }
     selected_stone.stone_x = possible_move[0];
     selected_stone.stone_y = possible_move[1];
     selected_stone.stone_moves = [];
-    console.clear();
-    console.log(side_friendly);
+    checkStatusChange();
+    console.log(selected_stone.stone_status);
     endTurn();
   }
 }
@@ -215,4 +235,32 @@ function endTurn() {
     color_friendly = blue;
     color_foe = red;
   }
+}
+
+function removeStone(x, y) {
+  let index = side_foe.findIndex(element =>
+    element.stone_x == x &&
+    element.stone_y == y
+  );
+
+  side_foe.splice(index, 1);
+  drawRect(x, y, black);
+}
+
+function checkStatusChange() {
+  switch (turn % 2) {
+    case 1:
+      if (selected_stone.stone_y == 7 * rect_side) {
+        selected_stone.stone_status = 2;
+        selected_stone.stone_color = pink;
+      }
+      break;
+    case 2:
+      if (selected_stone.stone_y == 0) {
+        selected_stone.stone_status = 2;
+        selected_stone.stone_color = azure;
+      }
+      break;
+  }
+  drawCircle(selected_stone.stone_x, selected_stone.stone_y, selected_stone.stone_color);
 }

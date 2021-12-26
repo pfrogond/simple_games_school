@@ -4,11 +4,17 @@ let turn = 1;
 let win_number = 4;
 let won = false;
 let current_game = null;
+let current_id = null;
 
-const rect_side = 50;
+const rect_side = 40;
+
+function getButtonId(button) {
+  current_id = button.id;
+  init();
+}
 
 //inicializace hry, popr. nacteni ulozene pozice
-function init(button) {
+function init() {
   //smazani a znovu vytvoreni canvasu
   if (document.getElementById('Tic_tac_toe_canvas') != null) {
     document.getElementById('Tic_tac_toe_canvas').remove();
@@ -16,16 +22,14 @@ function init(button) {
 
   window.canvas = document.createElement('canvas');
   canvas.id = 'Tic_tac_toe_canvas';
-  canvas.width = 600;
-  canvas.height = 600;
+  canvas.width = 12 * rect_side;
+  canvas.height = 12 * rect_side;
   canvas.addEventListener('click', addShape);
 
   let body = document.getElementById('main_body');
   body.appendChild(canvas);
 
   window.ctx = canvas.getContext('2d');
-
-  console.clear();
 
   let num_of_rects_horizontal = 12;
   let num_of_rects_vertical = 12;
@@ -36,11 +40,9 @@ function init(button) {
 
   window.rects = [];
 
-  current_game = ttt_prefix + button.id;
+  current_game = ttt_prefix + current_id;
   turn = 1;
   won = false;
-
-  console.log(current_game);
 
   //nacteni ulozene hry
   window.game = JSON.parse(localStorage.getItem(current_game) || '[]');
@@ -123,9 +125,6 @@ function addShape() {
       winCondition(rect.rect_id);
       saveGame();
     }
-    if (won) {
-      console.log(won);
-    }
   }
 }
 
@@ -138,7 +137,6 @@ function drawCross(x, y) {
   ctx.moveTo(x + rect_side - 5, y + 5);
   ctx.lineTo(x + 5, y + rect_side - 5);
   ctx.stroke();
-  console.log('cross ' + ' ' + x + ' ' + y);
 }
 
 //kolecko
@@ -147,7 +145,6 @@ function drawCircle(x, y) {
   ctx.beginPath();
   ctx.arc(x + (rect_side / 2), y + (rect_side / 2), rect_side / 2 - 5, 0, 2 * Math.PI)
   ctx.stroke();
-  console.log('circle' + ' ' + x + ' ' + y);
 }
 
 //overeni vitezstvi
@@ -214,8 +211,8 @@ function checkVertical() {
 function checkDiagonalDown() {
   let found = 1;
   let next = true;
-  let checked_x = rect.pos_x - 50;
-  let checked_y = rect.pos_y - 50;
+  let checked_x = rect.pos_x - rect_side;
+  let checked_y = rect.pos_y - rect_side;
   let checked_rect = null;
 
   while (checked_x >= 0 && checked_y >= 0 && next) {
@@ -228,8 +225,8 @@ function checkDiagonalDown() {
       if (found == win_number) {
         won = true;
       }
-      checked_x -= 50;
-      checked_y -= 50;
+      checked_x -= rect_side;
+      checked_y -= rect_side;
     } else {
       next = false;
     }
@@ -237,8 +234,8 @@ function checkDiagonalDown() {
 
   if (!won) {
     next = true;
-    checked_x = rect.pos_x + 50;
-    checked_y = rect.pos_y + 50;
+    checked_x = rect.pos_x + rect_side;
+    checked_y = rect.pos_y + rect_side;
 
     while (checked_x < canvas.width && checked_y < canvas.height && next) {
       checked_rect = rects.find(element =>
@@ -250,14 +247,13 @@ function checkDiagonalDown() {
         if (found == win_number) {
           won = true;
         }
-        checked_x -= 50;
-        checked_y -= 50;
+        checked_x -= rect_side;
+        checked_y -= rect_side;
       } else {
         next = false;
       }
     }
   }
-
   return won;
 }
 
@@ -265,8 +261,8 @@ function checkDiagonalDown() {
 function checkDiagonalUp() {
   let found = 1;
   let next = true;
-  let checked_x = rect.pos_x + 50;
-  let checked_y = rect.pos_y - 50;
+  let checked_x = rect.pos_x + rect_side;
+  let checked_y = rect.pos_y - rect_side;
   let checked_rect = null;
 
   while (checked_x < canvas.width && checked_y >= 0 && next) {
@@ -279,8 +275,8 @@ function checkDiagonalUp() {
       if (found == win_number) {
         won = true;
       }
-      checked_x += 50;
-      checked_y -= 50;
+      checked_x += rect_side;
+      checked_y -= rect_side;
     } else {
       next = false;
     }
@@ -288,8 +284,8 @@ function checkDiagonalUp() {
 
   if (!won) {
     next = true;
-    checked_x = rect.pos_x - 50;
-    checked_y = rect.pos_y + 50;
+    checked_x = rect.pos_x - rect_side;
+    checked_y = rect.pos_y + rect_side;
 
     while (checked_x >= 0 && checked_y < canvas.height && next) {
       checked_rect = rects.find(element =>
@@ -301,8 +297,8 @@ function checkDiagonalUp() {
         if (found == win_number) {
           won = true;
         }
-        checked_x -= 50;
-        checked_y += 50;
+        checked_x -= rect_side;
+        checked_y += rect_side;
       } else {
         next = false;
       }
@@ -320,4 +316,13 @@ function saveGame() {
     localStorage.removeItem(current_game);
   }
   localStorage.setItem(current_game, JSON.stringify(filled_rects));
+}
+
+function deleteGame() {
+  if (current_game != null) {
+    localStorage.removeItem(current_game);
+    turn = 1;
+    won = false;
+    init();
+  }
 }

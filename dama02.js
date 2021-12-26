@@ -7,17 +7,26 @@ const blue = '#0000FF';
 const azure = '#00FFFF';
 const green = '#00FF00';
 const rect_side = 40;
+const dama_prefix = 'dama_game_';
 
 let selected_stone = undefined;
+let won = false;
+let current_game = null;
+let current_id = null;
+
+function getButtonId(button) {
+  current_id = button.id;
+  init();
+}
 
 //inicializace hry
-function init(button) {
-  if (document.getElementById('Tic_tac_toe_canvas') != null) {
-    document.getElementById('Tic_tac_toe_canvas').remove();
+function init() {
+  if (document.getElementById('dama_canvas') != null) {
+    document.getElementById('dama_canvas').remove();
   }
 
   window.canvas = document.createElement('canvas');
-  canvas.id = 'Tic_tac_toe_canvas';
+  canvas.id = 'dama_canvas';
   canvas.width = 320;
   canvas.height = 320;
   canvas.addEventListener('click', click);
@@ -36,6 +45,8 @@ function init(button) {
   window.turn = 1;
   window.current_direction = rect_side;
 
+  current_game = dama_prefix + current_id;
+
   console.clear();
 
   for(let i = 0; i < 8; i++){
@@ -51,8 +62,30 @@ function init(button) {
     }
   }
 
-  initDeployment(0, red, side_red);
-  initDeployment(5 * rect_side, blue, side_blue);
+  let game = JSON.parse(localStorage.getItem(current_game) || '[]');
+
+  if (game.length > 0) {
+    turn = game.length;
+    won = game[0];
+    for(let i = 1; i < game.length; i++){
+      if (game[i].stone_color == red) {
+        side_red.push(game[i]);
+      } else {
+        side_blue.push(game[i]);
+      }
+      drawCircle(game[i].stone_x, game[i].stone_y, game[i].stone_color);
+    }
+    if (turn % 2 == 1) {
+      side_friendly = side_red;
+      side_foe = side_blue;
+    } else {
+      side_friendly = side_blue;
+      side_foe = side_red;
+    }
+  } else {
+    initDeployment(0, red, side_red);
+    initDeployment(5 * rect_side, blue, side_blue);
+  }
 }
 
 //vykresleni ctverce
@@ -76,16 +109,16 @@ function initDeployment(y, color, side) {
       switch (color) {
         case red:
           if (i % 2 == 0) {
-            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color));
+            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color, 1));
           } else {
-            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color));
+            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color, 1));
           }
           break;
         default:
           if (i % 2 == 0) {
-            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color));
+            side.push(createStone(j * 2 * rect_side, y + (i * rect_side), color, 1));
           } else {
-            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color));
+            side.push(createStone(rect_side + (j * 2 * rect_side), y + (i * rect_side), color, 1));
           }
       }
     }
@@ -93,50 +126,52 @@ function initDeployment(y, color, side) {
 }
 
 //vytvoreni herniho kamene a jeho vykresleni
-function createStone(x, y, color) {
+function createStone(x, y, color, status) {
   drawCircle(x, y, color);
 
   return {
     stone_x: x,
     stone_y: y,
     stone_color: color,
-    stone_status: 1,
+    stone_status: status,
     stone_moves: []
   };
 }
 
 //logika kliknuti mysi
 function click() {
-  let canvas_offset_left = canvas.offsetLeft + 5;
-  let canvas_offset_top = canvas.offsetTop + 5;
-  let click_x = event.clientX - canvas_offset_left;
-  let click_y = event.clientY - canvas_offset_top;
+  if (!won) {
+    let canvas_offset_left = canvas.offsetLeft + 5;
+    let canvas_offset_top = canvas.offsetTop + 5;
+    let click_x = event.clientX - canvas_offset_left;
+    let click_y = event.clientY - canvas_offset_top;
 
-  window.selected_x = null;
-  window.selected_y = null;
+    window.selected_x = null;
+    window.selected_y = null;
 
-  selected_x = Math.floor(click_x / rect_side);
-  selected_x *= rect_side;
+    selected_x = Math.floor(click_x / rect_side);
+    selected_x *= rect_side;
 
-  selected_y = Math.floor(click_y / rect_side);
-  selected_y *= rect_side;
+    selected_y = Math.floor(click_y / rect_side);
+    selected_y *= rect_side;
 
-  if (selected_stone != undefined) {
-    hideMoves();
-  }
-
-  findStone(side_friendly);
-
-  if (selected_stone != undefined) {
-    switch (selected_stone.stone_status) {
-      case 1:
-        getMovesNormal();
-        break;
-      case 2:
-        getMovesDama();
-        break;
+    if (selected_stone != undefined) {
+      hideMoves();
     }
-    moveStone();
+
+    findStone(side_friendly);
+
+    if (selected_stone != undefined) {
+      switch (selected_stone.stone_status) {
+        case 1:
+          getMovesNormal();
+          break;
+        case 2:
+          getMovesDama();
+          break;
+      }
+      moveStone();
+    }
   }
 }
 
@@ -242,21 +277,27 @@ function moveStone() {
 
 //konec tahu
 function endTurn() {
-  turn++;
-  current_direction *= -1;
-  selected_stone = undefined;
+  if (side_foe.length > 0) {
+    turn++;
+    current_direction *= -1;
+    selected_stone = undefined;
 
-  if (turn % 2 == 1) {
-    side_friendly = side_red;
-    side_foe = side_blue;
-    color_friendly = red;
-    color_foe = blue;
+    if (turn % 2 == 1) {
+      side_friendly = side_red;
+      side_foe = side_blue;
+      color_friendly = red;
+      color_foe = blue;
+    } else {
+      side_friendly = side_blue;
+      side_foe = side_red;
+      color_friendly = blue;
+      color_foe = red;
+    }
+    saveGame();
   } else {
-    side_friendly = side_blue;
-    side_foe = side_red;
-    color_friendly = blue;
-    color_foe = red;
+    won = true;
   }
+
 }
 
 function removeStone(x, y) {
@@ -376,5 +417,23 @@ function checkJump(x, y, obstruction) {
 function drawPossibleMoves() {
   for(let i = 0; i < selected_stone.stone_moves.length; i++){
     drawRect(selected_stone.stone_moves[i][0], selected_stone.stone_moves[i][1], green);
+  }
+}
+
+function saveGame() {
+  let stones = [];
+  stones.push(won, ...side_friendly, ...side_foe);
+  if (localStorage.getItem(current_game != null)) {
+    localStorage.removeItem(current_game);
+  }
+  localStorage.setItem(current_game, JSON.stringify(stones));
+}
+
+function deleteGame() {
+  if (current_game != null) {
+    localStorage.removeItem(current_game);
+    turn = 1;
+    won = false;
+    init();
   }
 }

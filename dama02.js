@@ -128,7 +128,14 @@ function click() {
   findStone(side_friendly);
 
   if (selected_stone != undefined) {
-    getMoves(current_direction, side_friendly, side_foe);
+    switch (selected_stone.stone_status) {
+      case 1:
+        getMovesNormal();
+        break;
+      case 2:
+        getMovesDama();
+        break;
+    }
     moveStone();
   }
 }
@@ -146,42 +153,53 @@ function findStone(side) {
 }
 
 //zobrazeni potencialnich tahu
-function getMoves(direction, friendly, foe) {
+function getMovesNormal() {
   let obstruction_friendly = undefined;
   let obstruction_foe = undefined;
 
+  console.clear();
+
+  selected_stone.stone_moves = [];
+
   for(let i = -1; i < 2; i+=2){
-    obstruction_friendly = getObstruction(i, direction, friendly);
-    obstruction_foe = getObstruction(i, direction, foe);
+    obstruction_friendly = getObstruction(
+      selected_stone.stone_x + (i * rect_side),
+      selected_stone.stone_y + current_direction,
+      side_friendly
+    );
+    obstruction_foe = getObstruction(
+      selected_stone.stone_x + (i * rect_side),
+      selected_stone.stone_y + current_direction,
+      side_foe
+    );
 
     if (
       obstruction_friendly == undefined &&
       obstruction_foe == undefined
     ) {
-      drawRect(selected_stone.stone_x + (i * rect_side), selected_stone.stone_y + direction, green);
       selected_stone.stone_moves.push([
         selected_stone.stone_x + (i * rect_side),
-        selected_stone.stone_y + direction]);
-    } else if (
-      obstruction_foe != undefined &&
-      getObstruction(i * 2, direction * 2, friendly) == undefined &&
-      getObstruction(i * 2, direction * 2, foe) == undefined
-    ) {
-      drawRect(selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + 2 * direction, green);
-      selected_stone.stone_moves.push([
-        selected_stone.stone_x + (2 * i * rect_side),
-        selected_stone.stone_y + 2 * direction
-      ]);
+        selected_stone.stone_y + current_direction]);
     }
+
+    if (checkJump(
+      selected_stone.stone_x + (2 * i * rect_side),
+      selected_stone.stone_y + (2 * current_direction),
+      obstruction_foe
+    )) {
+      selected_stone.stone_moves.push([selected_stone.stone_x + (2 * i * rect_side), selected_stone.stone_y + (2 * current_direction)]);
+    }
+
+    drawPossibleMoves();
   }
 }
 
 //vyhledani prekazek tahu
-function getObstruction(variable, direction, side) {
+function getObstruction(x, y, side) {
   return (
     side.find(element =>
-      element.stone_x == selected_stone.stone_x + (variable * rect_side) &&
-      element.stone_y == selected_stone.stone_y + direction
+      element.stone_x == x &&
+      element.stone_y == y
     )
   );
 }
@@ -199,21 +217,25 @@ function moveStone() {
     element[0] == selected_x &&
     element[1] == selected_y
   );
+
   if (possible_move != undefined) {
+    let dx = Math.abs(possible_move[0] - selected_stone.stone_x) / (possible_move[0] - selected_stone.stone_x);
+    let dy = Math.abs(possible_move[1] - selected_stone.stone_y) / (possible_move[1] - selected_stone.stone_y);
+    let obstruction_foe = getObstruction(
+      possible_move[0] - (dx * rect_side),
+      possible_move[1] - (dy * rect_side),
+      side_foe
+    );
     hideMoves();
     drawRect(selected_stone.stone_x, selected_stone.stone_y, black);
     drawCircle(possible_move[0], possible_move[1], selected_stone.stone_color);
-    if (Math.abs(possible_move[0] - selected_stone.stone_x) > rect_side) {
-      removeStone(
-        selected_stone.stone_x + (possible_move[0] - selected_stone.stone_x) / 2,
-        selected_stone.stone_y + current_direction
-      );
+    if (checkJump(possible_move[0], possible_move[1], obstruction_foe)) {
+      removeStone(obstruction_foe.stone_x, obstruction_foe.stone_y);
     }
     selected_stone.stone_x = possible_move[0];
     selected_stone.stone_y = possible_move[1];
     selected_stone.stone_moves = [];
     checkStatusChange();
-    console.log(selected_stone.stone_status);
     endTurn();
   }
 }
@@ -250,12 +272,12 @@ function removeStone(x, y) {
 function checkStatusChange() {
   switch (turn % 2) {
     case 1:
-      if (selected_stone.stone_y == 7 * rect_side) {
+      if (selected_stone.stone_y == canvas.height - rect_side) {
         selected_stone.stone_status = 2;
         selected_stone.stone_color = pink;
       }
       break;
-    case 2:
+    case 0:
       if (selected_stone.stone_y == 0) {
         selected_stone.stone_status = 2;
         selected_stone.stone_color = azure;
@@ -263,4 +285,96 @@ function checkStatusChange() {
       break;
   }
   drawCircle(selected_stone.stone_x, selected_stone.stone_y, selected_stone.stone_color);
+}
+
+function getMovesDama() {
+  let obstruction_friendly = undefined;
+  let obstruction_foe = undefined;
+  let next_move = [];
+  let next_possible_moves = [];
+
+  selected_stone.stone_moves = [];
+
+  console.clear();
+
+  for(let i = 0; i < 4; i++){
+    next_move[0] = selected_stone.stone_x;
+    next_move[1] = selected_stone.stone_y;
+    next_possible_moves = [];
+    obstruction_friendly = undefined;
+    obstruction_foe = undefined;
+
+    do {
+      switch (i) {
+        case 0:
+          next_move[0] += rect_side;
+          next_move[1] -= rect_side;
+          obstruction_friendly = getObstruction(next_move[0], next_move[1], side_friendly);
+          obstruction_foe = getObstruction(next_move[0], next_move[1], side_foe);
+          if (checkJump(next_move[0] + rect_side, next_move[1] - rect_side, obstruction_foe)) {
+            selected_stone.stone_moves.push([next_move[0] + rect_side, next_move[1] - rect_side]);
+          }
+          break;
+        case 1:
+          next_move[0] += rect_side;
+          next_move[1] += rect_side;
+          obstruction_friendly = getObstruction(next_move[0], next_move[1], side_friendly);
+          obstruction_foe = getObstruction(next_move[0], next_move[1], side_foe);
+          if (checkJump(next_move[0] + rect_side, next_move[1] + rect_side, obstruction_foe)) {
+            selected_stone.stone_moves.push([next_move[0] + rect_side, next_move[1] + rect_side]);
+          }
+          break;
+        case 2:
+          next_move[0] -= rect_side;
+          next_move[1] += rect_side;
+          obstruction_friendly = getObstruction(next_move[0], next_move[1], side_friendly);
+          obstruction_foe = getObstruction(next_move[0], next_move[1], side_foe);
+          if (checkJump(next_move[0] - rect_side, next_move[1] + rect_side, obstruction_foe)) {
+            selected_stone.stone_moves.push([next_move[0] - rect_side, next_move[1] + rect_side]);
+          }
+          break;
+        case 3:
+          next_move[0] -= rect_side;
+          next_move[1] -= rect_side;
+          obstruction_friendly = getObstruction(next_move[0], next_move[1], side_friendly);
+          obstruction_foe = getObstruction(next_move[0], next_move[1], side_foe);
+          if (checkJump(next_move[0] - rect_side, next_move[1] - rect_side, obstruction_foe)) {
+            selected_stone.stone_moves.push([next_move[0] - rect_side, next_move[1] - rect_side]);
+          }
+          break;
+      }
+      next_possible_moves.push([next_move[0], next_move[1]]);
+    } while (
+      next_move[0] >= 0 &&
+      next_move[0] < canvas.width &&
+      next_move[1] >= 0 &&
+      next_move[1] < canvas.height &&
+      obstruction_friendly == undefined &&
+      obstruction_foe == undefined
+    );
+
+    if (next_possible_moves.length > 1) {
+      next_possible_moves.splice(next_possible_moves.length - 1, 1);
+      selected_stone.stone_moves.push(...next_possible_moves);
+    }
+  }
+  drawPossibleMoves();
+}
+
+function checkJump(x, y, obstruction) {
+  if (
+    obstruction != undefined &&
+    getObstruction(x, y, side_friendly) == undefined &&
+    getObstruction(x, y, side_foe) == undefined
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function drawPossibleMoves() {
+  for(let i = 0; i < selected_stone.stone_moves.length; i++){
+    drawRect(selected_stone.stone_moves[i][0], selected_stone.stone_moves[i][1], green);
+  }
 }

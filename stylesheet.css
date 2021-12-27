@@ -1,3 +1,109 @@
-canvas {
+canvas{
   border: 5px solid;
+  margin: 0 auto;
+  text-align: center;
+}
+h1{
+  text-align: center;
+}
+h2{
+  padding-left: 50px;
+  padding-right: 50px;
+  font-size: 1.8em;
+}
+p{
+  padding-left: 50px;
+  padding-right: 50px;
+  font-size: 1.4em;
+}
+body{
+  background-image: url('pictures/background.png');
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+}
+
+.velkyNazev{
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+  text-shadow: 0.1em 0.1em 0.1em black;
+  color: white;
+  font-family: 'VT323', monospace;
+  font-size: 5em;
+  cursor: pointer;
+}
+.podNazev{
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+  text-shadow: 0.1em 0.1em 0.1em black;
+  color: white;
+  font-family: 'VT323', monospace;
+  font-size: 3em;
+}
+.horniLista{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.horniLista a{
+  flex-basis: 100%;
+  background-color: rgb(120, 120, 120);
+  transition: transform .2s;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  font-family: 'VT323', monospace;
+  font-size: 2em;
+  color: rgb(102, 0, 51);
+  text-decoration: none;
+  box-shadow: 0em 0.1em 0.1em black;
+}
+.horniLista a:hover{
+  transform: scale(1.1);
+  background-color: rgb(180, 180, 180);
+  font-family: 'VT323', monospace;
+}
+.spodniLista{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.spodniLista button{
+  flex-basis: 100%;
+  transition: transform .2s;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  font-family: 'VT323', monospace;
+  color: rgb(102, 0, 51);
+  font-size: 1.5em;
+  text-decoration: none;
+  box-shadow: 0em 0.1em 0.1em black;
+  cursor: pointer;
+}
+.spodniLista button:hover{
+  transform: scale(1.1);
+  font-family: 'VT323', monospace;
+}
+.obsahStranky{
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  padding-top: 1em;
+  padding-bottom: 2em;
+  font-family: 'VT323', monospace;
+  text-shadow: 0.05em 0.05em 0.05em rgb(120, 120, 120);
+  box-shadow: 0.7em 0.7em 0.7em rgb(120, 120, 120);
+}
+
+#canvas_place {
+  overflow: hidden;
 }

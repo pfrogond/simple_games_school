@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html lang="cs" dir="ltr">
   <head>
+    <!-- <?php include 'header.php'; ?> -->
+
     <meta charset="utf-8">
     <link rel="stylesheet" href="stylesheet.css">
-    <script src="tic-tac-toe.js" charset="utf-8"></script>
-    <title>Tic tac toe</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="jsFiles/utility.js"></script>
+    <script src="jsFiles/tic-tac-toe.js"></script>
+    <title>Piskvorky</title>
   </head>
-  <body id="main_body">
-    <button type="button"><a href="index.html">
-      Home
-    </a></button>
-    <br>
-    <div align="left" id="game_buttons">
+  <body>
+    <!-- <?php include 'body-template.php'; ?> -->
+
+    <div class="velkyNazev" onclick="home()">Hříčky na webu</div>
+    <div class="podNazev">Školní projekt</div>
+    <div class="horniLista">
+      <a href="index.html">Domů</a>
+      <a href="tic-tac-toe.html">Piskvorky</a>
+      <a href="dama.html">Dama</a>
+      <a href="snake.html">Had</a>
+      <a href="dama.html">Tetris</a>
+    </div>
+
+    <div class="spodniLista">
       <button type="button" id="1" onclick="getButtonId(this)">1</button>
       <button type="button" id="2" onclick="getButtonId(this)">2</button>
       <button type="button" id="3" onclick="getButtonId(this)">3</button>
@@ -23,8 +36,12 @@
       <button type="button" id="9" onclick="getButtonId(this)">9</button>
       <button type="button" id="10" onclick="getButtonId(this)">10</button>
     </div>
-    <br>
-    <button type="button" onclick="deleteGame()">Delete</button>
-    <br>
+
+    <div class="obsahStranky">
+      <br>
+      <button type="button" onclick="deleteGame()">Delete</button>
+      <br>
+      <div id="canvas_place"></div>
+    </div>
   </body>
 </html>

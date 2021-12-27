@@ -31,7 +31,7 @@ function init() {
   canvas.height = 320;
   canvas.addEventListener('click', click);
 
-  let body = document.getElementById('main_body');
+  let body = document.getElementById('canvas_place');
   body.appendChild(canvas);
 
   window.ctx = canvas.getContext('2d');
@@ -68,7 +68,7 @@ function init() {
     turn = game.length;
     won = game[0];
     for(let i = 1; i < game.length; i++){
-      if (game[i].stone_color == red) {
+      if (game[i].stone_color == red || game[i].stone_color == pink) {
         side_red.push(game[i]);
       } else {
         side_blue.push(game[i]);

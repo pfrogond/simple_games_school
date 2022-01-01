@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="cs" dir="ltr">
+  <head>
+    <!-- <?php include 'header.php'; ?> -->
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="jsFiles/utility.js"></script>
+    <script src="jsFiles/tetris.js"></script>
+    <title>Tetris</title>
+  </head>
+  <body>
+    <!-- <?php include 'body-template.php'; ?> -->
+
+    <div class="velkyNazev" onclick="home()">Hříčky na webu</div>
+    <div class="podNazev">Školní projekt</div>
+    <div class="horniLista">
+      <a href="index.html">Domů</a>
+      <a href="tic-tac-toe.html">Piskvorky</a>
+      <a href="dama.html">Dama</a>
+      <a href="snake.html">Snake</a>
+      <a href="tetris.html">Tetris</a>
+    </div>
+
+    <div class="obsahStranky">
+      <br>
+      <button type="button" onclick="initTetris()">Start</button>
+      <br>
+      <div id="canvas_place"></div>
+    </div>
+  </body>
+</html>

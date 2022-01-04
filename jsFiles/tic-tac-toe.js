@@ -105,11 +105,8 @@ function addShape() {
   if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas_bounding.left;
-    let click_y = event.clientY - canvas_bounding.top;
-
-    console.log(click_x);
-    console.log(click_y);
+    let click_x = event.clientX - canvas_bounding.left - 5;
+    let click_y = event.clientY - canvas_bounding.top - 5;
 
     window.rect_x = null;
     window.rect_y = null;

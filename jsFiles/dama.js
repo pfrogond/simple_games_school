@@ -44,6 +44,7 @@ function init() {
   window.color_foe = blue;
   window.turn = 1;
   window.current_direction = rect_side;
+  window.canvas_bounding = canvas.getBoundingClientRect();
 
   current_game = dama_prefix + current_id;
 
@@ -142,8 +143,8 @@ function click() {
   if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas.width / 2 - rect_side;
-    let click_y = event.clientY - canvas.height / 2 - rect_side;
+    let click_x = event.clientX - canvas_bounding.left;
+    let click_y = event.clientY - canvas_bounding.top;
 
     console.log(click_x);
     console.log(click_y);

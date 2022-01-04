@@ -44,6 +44,7 @@ function init() {
 
   window.rects = [];
   window.filled_rects = [];
+  window.canvas_bounding = canvas.getBoundingClientRect();
 
   current_game = ttt_prefix + current_id;
   turn = 1;
@@ -104,8 +105,8 @@ function addShape() {
   if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas.width / 2 + rect_side;
-    let click_y = event.clientY - rect_side;
+    let click_x = event.clientX - canvas_bounding.left;
+    let click_y = event.clientY - canvas_bounding.top;
 
     window.rect_x = null;
     window.rect_y = null;

@@ -3,26 +3,24 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="stylesheet.css">
-    <script src="snake.js" charset="utf-8"></script>
+    <script src="jsFiles/snake.js" charset="utf-8"></script>
     <title>Dama</title>
   </head>
   <body id="main_body">
-    <button type="button"><a href="index.html">
-      Home
-    </a></button>
-    <br>
-    <div align="left" id="game_buttons">
-      <button type="button" id="1" onclick="init(this)">1</button>
-      <button type="button" id="2" onclick="init(this)">2</button>
-      <button type="button" id="3" onclick="init(this)">3</button>
-      <button type="button" id="4" onclick="init(this)">4</button>
-      <button type="button" id="5" onclick="init(this)">5</button>
-      <button type="button" id="6" onclick="init(this)">6</button>
-      <button type="button" id="7" onclick="init(this)">7</button>
-      <button type="button" id="8" onclick="init(this)">8</button>
-      <button type="button" id="9" onclick="init(this)">9</button>
-      <button type="button" id="10" onclick="init(this)">10</button>
+    <div class="velkyNazev" onclick="home()">Hříčky na webu</div>
+    <div class="podNazev">Školní projekt</div>
+    <div class="horniLista">
+      <a href="index.html">Domů</a>
+      <a href="tic-tac-toe.html">Piskvorky</a>
+      <a href="dama.html">Dama</a>
+      <a href="snake.html">Had</a>
+      <a href="tetris.html">Tetris</a>
     </div>
-    <br>
+
+    <div class="obsahStranky">
+      <button type="button" onclick="snake()">Game</button>
+      <br>
+      <div id="canvas_place"></div>
+    </div>
   </body>
 </html>

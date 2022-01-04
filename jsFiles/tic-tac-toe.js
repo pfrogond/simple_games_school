@@ -101,11 +101,11 @@ function createRect(id, x, y, filled, color) {
 //pridani noveho tvaru
 function addShape() {
   //ocisteni souradnic kliku od offsetu herniho pole
-  if (!won) {
+  if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas_offset_left;
-    let click_y = event.clientY - canvas_offset_top;
+    let click_x = event.clientX - canvas.width / 2 + rect_side;
+    let click_y = event.clientY - rect_side;
 
     window.rect_x = null;
     window.rect_y = null;
@@ -213,8 +213,6 @@ function checkLine(dx, dy) {
     let checked_rect = undefined;
 
     window.rects_in_line = [rect];
-
-    console.log(rects_in_line);
 
     for(let i = -1; i < 2; i+=2){
       do {

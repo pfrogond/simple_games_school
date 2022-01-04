@@ -47,8 +47,6 @@ function init() {
 
   current_game = dama_prefix + current_id;
 
-  console.clear();
-
   for(let i = 0; i < 8; i++){
     for(let j = 0; j < 8; j++){
       if (
@@ -140,11 +138,15 @@ function createStone(x, y, color, status) {
 
 //logika kliknuti mysi
 function click() {
-  if (!won) {
+
+  if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas_offset_left;
-    let click_y = event.clientY - canvas_offset_top;
+    let click_x = event.clientX - canvas.width / 2 - rect_side;
+    let click_y = event.clientY - canvas.height / 2 - rect_side;
+
+    console.log(click_x);
+    console.log(click_y);
 
     window.selected_x = null;
     window.selected_y = null;
@@ -191,8 +193,6 @@ function findStone(side) {
 function getMovesNormal() {
   let obstruction_friendly = undefined;
   let obstruction_foe = undefined;
-
-  console.clear();
 
   selected_stone.stone_moves = [];
 
@@ -335,8 +335,6 @@ function getMovesDama() {
   let next_possible_moves = [];
 
   selected_stone.stone_moves = [];
-
-  console.clear();
 
   for(let i = 0; i < 4; i++){
     next_move[0] = selected_stone.stone_x;

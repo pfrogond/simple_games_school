@@ -44,6 +44,7 @@ function init() {
 
   window.rects = [];
   window.filled_rects = [];
+  window.canvas_bounding = canvas.getBoundingClientRect();
 
   current_game = ttt_prefix + current_id;
   turn = 1;
@@ -101,11 +102,11 @@ function createRect(id, x, y, filled, color) {
 //pridani noveho tvaru
 function addShape() {
   //ocisteni souradnic kliku od offsetu herniho pole
-  if (!won) {
+  if (won == false) {
     let canvas_offset_left = canvas.offsetLeft + 5;
     let canvas_offset_top = canvas.offsetTop + 5;
-    let click_x = event.clientX - canvas_offset_left;
-    let click_y = event.clientY - canvas_offset_top;
+    let click_x = event.clientX - canvas_bounding.left - 5;
+    let click_y = event.clientY - canvas_bounding.top - 5;
 
     window.rect_x = null;
     window.rect_y = null;
@@ -213,8 +214,6 @@ function checkLine(dx, dy) {
     let checked_rect = undefined;
 
     window.rects_in_line = [rect];
-
-    console.log(rects_in_line);
 
     for(let i = -1; i < 2; i+=2){
       do {

@@ -108,6 +108,9 @@ function addShape() {
     let click_x = event.clientX - canvas_bounding.left;
     let click_y = event.clientY - canvas_bounding.top;
 
+    console.log(click_x);
+    console.log(click_y);
+
     window.rect_x = null;
     window.rect_y = null;
 

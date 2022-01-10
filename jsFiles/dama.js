@@ -64,7 +64,7 @@ function init() {
   let game = JSON.parse(localStorage.getItem(current_game) || '[]');
 
   if (game.length > 0) {
-    turn = game.length;
+    turn = game.length - 1;
     won = game[0];
     for(let i = 1; i < game.length; i++){
       if (game[i].stone_color == red || game[i].stone_color == pink) {

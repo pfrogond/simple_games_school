@@ -36,6 +36,8 @@ function init() {
 
   window.ctx = canvas.getContext('2d');
 
+  console.clear();
+
   window.side_red = [];
   window.side_blue = [];
   window.side_friendly = side_red;
@@ -80,11 +82,14 @@ function init() {
     } else {
       side_friendly = side_blue;
       side_foe = side_red;
+      current_direction *= -1;
     }
   } else {
     initDeployment(0, red, side_red);
     initDeployment(5 * rect_side, blue, side_blue);
   }
+
+  console.log(side_friendly);
 }
 
 //vykresleni ctverce
